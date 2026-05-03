@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Emotional Space AI — System Monitor</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div id="container">
+  <video id="cam" autoplay playsinline muted></video>
+  <canvas id="overlay"></canvas>
+</div>
+
+<div id="ui-panel">
+  <div id="title">EMOTIONAL SPACE AI</div>
+  <div id="subtitle">BASED ON COLLECTIVE EMOTIONAL DATA</div>
+
+  <div class="metric-row">
+    <span class="label">PEOPLE DETECTED:</span>
+    <span id="people-count">0</span>
+  </div>
+  <div class="metric-row">
+    <span class="label">NOISE LEVEL:</span>
+    <span id="noise-level">—</span>
+  </div>
+  <div class="metric-row">
+    <span class="label">OCCUPANCY TIME:</span>
+    <span id="occupancy-time">0s</span>
+  </div>
+  <div id="ai-goal-box">
+    <div class="goal-label">CURRENT AI GOAL</div>
+    <div id="ai-goal">—</div>
+  </div>
+
+  <div class="metric-row">
+    <span class="label">SYSTEM MODE:</span>
+    <span id="system-mode">IDLE</span>
+  </div>
+  <div class="metric-row">
+    <span class="label">LIGHT:</span>
+    <span id="light-info">—</span>
+  </div>
+
+  <div id="status-line">ENVIRONMENTAL ADJUSTMENT IN PROGRESS</div>
+  <div id="face-hint">AWAITING FACE — Face the camera directly</div>
+</div>
+
+<div id="start-screen">
+  <div class="start-title">EMOTIONAL SPACE AI</div>
+  <div class="start-sub">1st Floor — Algorithmic Social Intervention</div>
+  <button id="startBtn">TOUCH TO START</button>
+  <div class="start-hint">Camera & microphone access required</div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

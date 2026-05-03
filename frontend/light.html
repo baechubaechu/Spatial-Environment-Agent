@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>조명 제어</title>
+<style>body{font:12px monospace;background:#111;color:#ccc;padding:12px;margin:0}
+button{padding:10px 16px;margin:4px;font-size:11px;cursor:pointer;background:#2a5;color:#fff;border:none;border-radius:4px}
+button:hover{background:#3b6}
+#msg{margin-top:8px;font-size:12px;font-weight:bold}</style></head>
+<body>
+<h1>조명 수동 제어</h1>
+<div id="tapoStatus" style="font-size:10px;color:#666;margin-bottom:8px"></div>
+<button type="button" id="btnIdle">IDLE (대기)</button>
+<button type="button" id="btnCrowd">CROWD (관찰)</button>
+<button type="button" id="btnStress">STRESS (개입)</button>
+<button type="button" id="btnAct">ACTIVATION (활성화)</button>
+<button type="button" id="btnOff" style="background:#633;margin-left:8px">조명 끄기</button>
+<div id="msg"></div>
+<script>
+var msg=document.getElementById('msg');
+function go(s){
+  msg.textContent='전송 중...';
+  msg.style.color='#fa5';
+  fetch('/api/light?state='+s).then(function(r){return r.json()}).then(function(d){
+    msg.textContent=d.ok?'적용됨: '+s:'오류: '+(d.error||'');
+    msg.style.color=d.ok?'#2a5':'#f55';
+  }).catch(function(e){msg.textContent='실패: '+e.message;msg.style.color='#f55'});
+}
+document.getElementById('btnIdle').onclick=function(){go('idle')};
+document.getElementById('btnCrowd').onclick=function(){go('observed_crowd')};
+document.getElementById('btnStress').onclick=function(){go('managed_stress')};
+document.getElementById('btnAct').onclick=function(){go('algorithmic_activation')};
+fetch('/api/tapo-status').then(function(r){return r.json()}).then(function(d){
+  var s=document.getElementById('tapoStatus');
+  s.textContent='TAPO_IPS: '+d.ips.join(', ')+(d.username_set?' | 계정 설정됨':' | TAPO_USERNAME/PASSWORD 확인');
+  if(d.hint)s.title=d.hint;
+}).catch(function(){});
+document.getElementById('btnOff').onclick=function(){
+  msg.textContent='전송 중...';
+  msg.style.color='#fa5';
+  fetch('/api/light-off').then(function(r){return r.json().catch(function(){return{ok:false,error:'응답 오류 '+r.status}})}).then(function(d){
+    msg.textContent=d.ok?'조명 꺼짐':'오류: '+(d.error||'');
+    msg.style.color=d.ok?'#2a5':'#f55';
+  }).catch(function(e){msg.textContent='실패: '+e.message;msg.style.color='#f55'});
+};
+</script>
+</body></html>

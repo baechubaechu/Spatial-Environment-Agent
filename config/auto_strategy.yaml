@@ -1,0 +1,66 @@
+# 자동 공간 전략 — sensor.state(비전 인원·마이크 dB·감정)만 사용
+# 위→아래 첫 매칭만 적용.
+#
+# 상황 가정 (소형 단면 모형 부스):
+# · 카메라 한 컷에 사람 최대 약 5명
+# · 공간이 작아 대화·발걸음만으로도 dB가 빨리 올라감 → 시끄러움 기준은 홀 대비 낮게
+# · 인원 4명 이상이면 “거의 만석”, 혼잡 씬으로 전환
+# · 조용·한산 → calm_gallery / 평범 관람(neutral) → 단면 읽기 유도 critical_focus
+
+version: 2
+rules:
+  # --- 소음 우선: 급하게 시끄러우면 에너지 씬 ---
+  - id: auto_loud
+    scene_id: dense_flux
+    reason: auto:loud
+    decibel_min: 65
+
+  # --- 인원: 소형 화면 기준 4명 이상이면 혼잡으로 간주 ---
+  - id: auto_many_people
+    scene_id: dense_flux
+    reason: auto:crowd
+    people_min: 4
+
+  # --- 정서: 피로·압박 → 저조도·완충 ---
+  - id: auto_stressed
+    scene_id: night_reflect
+    reason: auto:stressed
+    emotion_in: [stressed]
+
+  # --- 정서: 호기심·가벼운 활동 → 단면 집중광 ---
+  - id: auto_active
+    scene_id: critical_focus
+    reason: auto:active
+    emotion_in: [active]
+
+  # --- 거의 비었고 매우 조용· calm ---
+  - id: auto_calm_sparse
+    scene_id: calm_gallery
+    reason: auto:calm_sparse
+    people_max: 3
+    decibel_max: 52
+    emotion_in: [calm]
+
+  # --- 소그룹이지만 여전히 여유· calm ---
+  - id: auto_calm_group
+    scene_id: calm_gallery
+    reason: auto:calm_group
+    people_min: 1
+    people_max: 4
+    decibel_max: 56
+    emotion_in: [calm]
+
+  # --- 평균적 관람(neutral): 단면·구조 읽기 무드 ---
+  - id: auto_neutral_browse
+    scene_id: critical_focus
+    reason: auto:neutral_browse
+    people_min: 1
+    people_max: 4
+    decibel_max: 64
+    emotion_in: [neutral]
+
+  # --- 그 외 전부 (예: 5명인데 calm 등 규칙 외 케이스) ---
+  - id: auto_default
+    match_all: true
+    scene_id: calm_gallery
+    reason: auto:default

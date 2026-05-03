@@ -1,0 +1,39 @@
+# 로컬 TLS·비밀키 (레포에 절대 올리지 않음)
+*.pem
+*.pem.crt
+cert.pem
+key.pem
+norse-retina*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+ENV/
+.env
+.env.*
+!.env.example
+
+# Next.js (web/)
+web/node_modules/
+web/.next/
+web/out/
+web/.vercel/
+web/.turbo/
+web/*.log
+web/certificates/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Arduino / build artifacts
+*.hex
+*.elf

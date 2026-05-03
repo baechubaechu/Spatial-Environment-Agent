@@ -1,0 +1,358 @@
+﻿safe_scene: safe_neutral
+
+scenes:
+
+  # --- 자동 전략용 베이스 씬 (소형 전시 톤에 맞춤) ---
+
+  - id: calm_gallery
+
+    hold_sec: 120
+
+    target_zone: all
+
+    light:
+
+      brightness: 40
+
+      color_temp: 4200
+
+      transition_ms: 900
+
+    sound:
+
+      track: ambient_calm
+
+      volume: 20
+
+      fade_ms: 900
+
+    display:
+
+      layout_id: gallery_calm
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: dense_flux
+
+    hold_sec: 90
+
+    target_zone: all
+
+    light:
+
+      brightness: 74
+
+      color_temp: 5100
+
+      transition_ms: 450
+
+    sound:
+
+      track: crowd_flux
+
+      volume: 38
+
+      fade_ms: 550
+
+    display:
+
+      layout_id: hall_energy
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: critical_focus
+
+    hold_sec: 100
+
+    target_zone: all
+
+    light:
+
+      brightness: 56
+
+      color_temp: 5900
+
+      transition_ms: 600
+
+    sound:
+
+      track: focus_pulse
+
+      volume: 28
+
+      fade_ms: 650
+
+    display:
+
+      layout_id: diagram_focus
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: night_reflect
+
+    hold_sec: 140
+
+    target_zone: all
+
+    light:
+
+      brightness: 26
+
+      color_temp: 2900
+
+      transition_ms: 1400
+
+    sound:
+
+      track: low_reflect
+
+      volume: 16
+
+      fade_ms: 1200
+
+    display:
+
+      layout_id: night_mood
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: safe_neutral
+
+    hold_sec: 60
+
+    target_zone: all
+
+    light:
+
+      brightness: 38
+
+      color_temp: 4050
+
+      transition_ms: 500
+
+    sound:
+
+      track: silence
+
+      volume: 0
+
+      fade_ms: 500
+
+    display:
+
+      layout_id: idle
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  # 태블릿 도면 핀 — target_zone 은 scene.execute payload 로 덮어씀
+
+  - id: floor_pin_1
+
+    hold_sec: 120
+
+    target_zone: all
+
+    light:
+
+      brightness: 62
+
+      color_temp: 4800
+
+      transition_ms: 200
+
+    sound:
+
+      track: focus_pulse
+
+      volume: 22
+
+      fade_ms: 350
+
+    display:
+
+      layout_id: diagram_focus
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: floor_pin_2
+
+    hold_sec: 120
+
+    target_zone: all
+
+    light:
+
+      brightness: 74
+
+      color_temp: 5400
+
+      transition_ms: 200
+
+    sound:
+
+      track: crowd_flux
+
+      volume: 28
+
+      fade_ms: 350
+
+    display:
+
+      layout_id: hall_energy
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: floor_pin_3
+
+    hold_sec: 120
+
+    target_zone: all
+
+    light:
+
+      brightness: 55
+
+      color_temp: 6100
+
+      transition_ms: 200
+
+    sound:
+
+      track: ambient_calm
+
+      volume: 18
+
+      fade_ms: 350
+
+    display:
+
+      layout_id: gallery_calm
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: floor_pin_4
+
+    hold_sec: 120
+
+    target_zone: all
+
+    light:
+
+      brightness: 48
+
+      color_temp: 4400
+
+      transition_ms: 200
+
+    sound:
+
+      track: low_reflect
+
+      volume: 20
+
+      fade_ms: 350
+
+    display:
+
+      layout_id: night_mood
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: floor_pin_5
+
+    hold_sec: 120
+
+    target_zone: all
+
+    light:
+
+      brightness: 68
+
+      color_temp: 5200
+
+      transition_ms: 200
+
+    sound:
+
+      track: crowd_flux
+
+      volume: 32
+
+      fade_ms: 350
+
+    display:
+
+      layout_id: hall_energy
+
+      headline: ""
+
+      subtitle: ""
+
+
+
+  - id: floor_pin_6
+
+    hold_sec: 120
+
+    target_zone: all
+
+    light:
+
+      brightness: 40
+
+      color_temp: 3800
+
+      transition_ms: 200
+
+    sound:
+
+      track: ambient_calm
+
+      volume: 16
+
+      fade_ms: 350
+
+    display:
+
+      layout_id: gallery_calm
+
+      headline: ""
+
+      subtitle: ""
+

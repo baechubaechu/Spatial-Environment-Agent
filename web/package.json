@@ -1,0 +1,34 @@
+{
+  "name": "exhibition-control",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true});\"",
+    "dev": "next dev --turbopack -p 3001",
+    "dev:lan": "next dev --turbopack -p 3001 --hostname 0.0.0.0",
+    "dev:lan:https": "next dev --turbopack -p 3001 --hostname 0.0.0.0 --experimental-https",
+    "dev:lan:https:trusted": "next dev --turbopack -p 3001 --hostname 0.0.0.0 --experimental-https --experimental-https-key ../../certs/cert-key.pem --experimental-https-cert ../../certs/cert.pem",
+    "dev:webpack": "next dev -p 3001",
+    "dev:clean": "npm run clean && next dev --turbopack -p 3001",
+    "build": "next build",
+    "build:clean": "npm run clean && npm run build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "check:event-bus": "tsx scripts/check-event-bus-health.ts"
+  },
+  "dependencies": {
+    "next": "^15.2.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "eslint": "^9.24.0",
+    "eslint-config-next": "^15.2.4",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

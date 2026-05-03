@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monitor</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:monospace;background:#0a0a0a;color:#ccc;margin:0;padding:12px;font-size:12px}
+h1{color:#7dd;font-size:14px}
+.hint{background:#1a2a1a;border:1px solid #2a4;padding:8px;margin:8px 0;color:#8c8;font-size:11px}
+.top{display:flex;gap:16px;margin:12px 0;flex-wrap:wrap}
+.top .frame{width:320px;height:180px;background:#000;border:1px solid #333;border-radius:4px;flex-shrink:0}
+.top .mic{flex:1;min-width:200px}
+.mic-bar{height:24px;background:#222;border-radius:4px;overflow:hidden;margin:8px 0}
+.mic-fill{height:100%;background:linear-gradient(90deg,#2a5,#fa5);transition:width 0.2s}
+.section{background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:12px;margin:12px 0}
+.section h2{font-size:11px;color:#6a8;margin:0 0 10px 0}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{width:70px;font-size:11px}
+.slider-row input[type=range]{flex:1;min-width:120px;accent-color:#2a5}
+.slider-row span{width:36px;text-align:right;font-size:11px;color:#8a8}
+.output{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.output-card{background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:12px}
+.output-card h3{font-size:10px;color:#6a8;margin:0 0 8px 0;text-transform:uppercase}
+.output-card .val{font-size:13px;color:#7dd}
+.output-card .desc{font-size:10px;color:#888;margin-top:4px}
+button{padding:8px 14px;margin:4px 4px 4px 0;font-size:11px;cursor:pointer;background:#333;color:#fff;border:1px solid #555;border-radius:4px}
+button:hover{background:#444}
+button.run{background:#2a5;border-color:#2a5}
+#status{color:#8a8;margin:8px 0;font-size:11px}
+iframe{border:1px solid #333;border-radius:4px;background:#111;width:100%;min-height:140px}
+</style></head>
+<body>
+<h1>MONITOR — 데스크톱</h1>
+<div class="hint">태블릿에서 https://&lt;데스크톱IP&gt;:8000 접속 후 카메라·마이크 허용.</div>
+<div id="status">연결 중...</div>
+<button type="button" onclick="doRefresh()" style="margin-bottom:8px">새로고침</button>
+
+<div class="top">
+<div class="frame"></div>
+<div class="mic">
+<div class="section"><h2>마이크 입력 (태블릿)</h2>
+<div class="mic-bar"><div class="mic-fill" id="micFill" style="width:0%"></div></div>
+<div id="micVal">0.000</div>
+</div>
+</div>
+</div>
+
+<div class="section"><h2>CONTROLLER — 인원수·감정값·소음</h2>
+<div class="slider-row"><label>people</label><input type="range" id="people" min="0" max="20" value="0"><span id="peopleVal">0</span></div>
+<div class="slider-row"><label>noise</label><input type="range" id="noise" min="0" max="100" value="0"><span id="noiseVal">0</span><span style="font-size:10px;color:#666">(0~1)</span></div>
+<div class="slider-row"><label>joy</label><input type="range" id="joy" min="0" max="5" step="0.25" value="0"><span id="joyVal">0</span></div>
+<div class="slider-row"><label>sorrow</label><input type="range" id="sorrow" min="0" max="5" step="0.25" value="0"><span id="sorrowVal">0</span></div>
+<div class="slider-row"><label>anger</label><input type="range" id="anger" min="0" max="5" step="0.25" value="0"><span id="angerVal">0</span></div>
+<div class="slider-row"><label>surprise</label><input type="range" id="surprise" min="0" max="5" step="0.25" value="0"><span id="surpriseVal">0</span></div>
+<button type="button" class="run" onclick="doSimulate()">실행 (조명 반영)</button>
+</div>
+
+<div class="section"><h2>조명 수동 제어</h2>
+<iframe src="/static/light.html" title="조명 제어"></iframe>
+</div>
+
+<div class="output">
+<div class="output-card"><h3>AI 목표</h3><div class="val" id="goal">—</div></div>
+<div class="output-card"><h3>상태</h3><div class="val" id="state">—</div></div>
+<div class="output-card"><h3>조명</h3><div class="val" id="light">—</div></div>
+<div class="output-card"><h3>백색소음</h3><div class="val" id="whiteNoise">—</div><div class="desc" id="whiteNoiseReason">—</div></div>
+</div>
+
+<script>
+var status=document.getElementById('status');
+var lastNoise=0;
+
+function getPayload(){
+  var n=parseInt(document.getElementById('noise').value)||0;
+  return {
+    people_count: parseInt(document.getElementById('people').value)||0,
+    noise_level: n/100,
+    joy: parseFloat(document.getElementById('joy').value)||0,
+    sorrow: parseFloat(document.getElementById('sorrow').value)||0,
+    anger: parseFloat(document.getElementById('anger').value)||0,
+    surprise: parseFloat(document.getElementById('surprise').value)||0
+  };
+}
+function updateSliderLabels(){
+  document.getElementById('peopleVal').textContent=document.getElementById('people').value;
+  document.getElementById('noiseVal').textContent=(document.getElementById('noise').value/100).toFixed(2);
+  document.getElementById('joyVal').textContent=document.getElementById('joy').value;
+  document.getElementById('sorrowVal').textContent=document.getElementById('sorrow').value;
+  document.getElementById('angerVal').textContent=document.getElementById('anger').value;
+  document.getElementById('surpriseVal').textContent=document.getElementById('surprise').value;
+}
+function doPreview(){
+  var p=getPayload();
+  fetch('/api/preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})
+  .then(function(r){return r.json()})
+  .then(function(d){
+    document.getElementById('goal').textContent=d.goal||'—';
+    document.getElementById('state').textContent=d.state||'—';
+    document.getElementById('light').textContent=d.light?d.light.brightness+'%, '+d.light.color_temp+'K':'—';
+    document.getElementById('whiteNoise').textContent=d.white_noise?d.white_noise.volume+'%':'—';
+    document.getElementById('whiteNoiseReason').textContent=d.white_noise?d.white_noise.reason:'—';
+  }).catch(function(){});
+}
+function doRefresh(){
+  fetch('/api/monitor-data')
+  .then(function(r){return r.json()})
+  .then(function(json){
+    if(!json.ok){status.textContent=json.error||'태블릿 데이터 대기 중';return}
+    var data=json.data;
+    var inp=data.input||{},out=data.output||{};
+    lastNoise=inp.noise_level_raw!=null?inp.noise_level_raw:0;
+    status.textContent='Updated: '+new Date(data.timestamp*1000).toLocaleTimeString();
+    document.getElementById('micFill').style.width=(lastNoise*100)+'%';
+    document.getElementById('micVal').textContent=lastNoise.toFixed(3);
+    document.getElementById('goal').textContent=out.goal||'—';
+    document.getElementById('state').textContent=out.state||'—';
+    document.getElementById('light').textContent=out.light?out.light.brightness+'%, '+out.light.color_temp+'K':'—';
+    var wn=out.white_noise;
+    document.getElementById('whiteNoise').textContent=wn?wn.volume+'%':'—';
+    document.getElementById('whiteNoiseReason').textContent=wn?wn.reason:'—';
+  })
+  .catch(function(e){status.textContent='연결 실패: '+e.message});
+}
+function doSimulate(){
+  var p=getPayload();
+  fetch('/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({people_count:p.people_count,noise_level:p.noise_level,joy:p.joy,sorrow:p.sorrow,anger:p.anger,surprise:p.surprise})})
+  .then(function(r){return r.json()})
+  .then(function(d){status.textContent='실행: state='+d.state;doRefresh()})
+  .catch(function(e){status.textContent='실패: '+e.message});
+}
+function onSliderChange(){
+  updateSliderLabels();
+  setTimeout(doPreview,150);
+}
+function init(){
+  fetch('/api/control').then(function(r){return r.json()}).then(function(d){
+    if(d.manual){
+      document.getElementById('people').value=d.manual.people_count;
+      document.getElementById('noise').value=Math.round((d.manual.noise_level||0)*100);
+      document.getElementById('joy').value=d.manual.joy;
+      document.getElementById('sorrow').value=d.manual.sorrow;
+      document.getElementById('anger').value=d.manual.anger;
+      document.getElementById('surprise').value=d.manual.surprise;
+    }
+    updateSliderLabels();
+  });
+  ['people','noise','joy','sorrow','anger','surprise'].forEach(function(id){
+    document.getElementById(id).oninput=onSliderChange;
+  });
+  doPreview();
+  doRefresh();
+  setInterval(doRefresh,1000);
+}
+window.onload=init;
+</script>
+</body></html>

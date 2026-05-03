@@ -1,0 +1,173 @@
+/* Emotional Space AI — Monitoring interface (cold, institutional) */
+* { box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  margin: 0; padding: 0;
+  overflow: hidden;
+  background: #0a0a0a;
+  font-family: 'Courier New', 'Consolas', monospace;
+  color: #ccc;
+  user-select: none;
+}
+
+#container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+}
+
+#cam {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  filter: brightness(0.85) contrast(1.05);
+}
+
+#overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  pointer-events: none;
+}
+
+#ui-panel {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(5, 5, 5, 0.45);
+  border-top: 1px solid rgba(80, 80, 80, 0.5);
+  padding: 16px 20px 24px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+#ui-panel.visible { opacity: 1; }
+
+#title {
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 3px;
+  margin-bottom: 2px;
+}
+
+#subtitle {
+  font-size: 9px;
+  color: #444;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+#ai-goal-box {
+  background: rgba(100, 150, 120, 0.15);
+  border: 1px solid rgba(100, 200, 150, 0.4);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.goal-label {
+  font-size: 9px;
+  color: #6a8;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+#ai-goal {
+  font-size: 13px;
+  color: #cfc;
+  line-height: 1.4;
+}
+
+.metric-row {
+  margin: 6px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label { color: #777; }
+.metric-row span:last-child { color: #fff; font-weight: 500; }
+
+#system-mode { color: #7dd; }
+#status-line {
+  margin-top: 12px;
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 1px;
+}
+
+#face-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+#face-hint.detected {
+  color: #5a5;
+}
+
+/* Start screen */
+#start-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: opacity 0.6s;
+}
+
+#start-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.start-title {
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.start-sub {
+  font-size: 11px;
+  color: #444;
+  margin-bottom: 30px;
+}
+
+#startBtn {
+  padding: 16px 40px;
+  border: 1px solid #555;
+  background: transparent;
+  color: #aaa;
+  font-size: 14px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+#startBtn:active {
+  background: #222;
+  color: #fff;
+}
+
+.start-hint {
+  margin-top: 20px;
+  font-size: 10px;
+  color: #444;
+}
+
+@media (max-width: 768px) {
+  .metric-row { font-size: 12px; }
+  #ui-panel { padding: 12px 16px 20px; }
+}
