@@ -1,0 +1,37 @@
+# 사용법:
+# 1) 아래 ━━━ 루트 .env ━━━ 블록 전체를 복사 → exhibition-agent 폴더에 파일 이름 .env 로 저장
+# 2) 아래 ━━━ web/.env.local ━━━ 블록 전체를 복사 → web 폴더에 파일 이름 .env.local 로 저장
+# 3) CHANGEME_ 로 적힌 값만 본인 환경에 맞게 수정
+#
+# 비밀번호·토큰은 Git 에 올리지 마세요 (.gitignore 가 .env 를 제외함)
+
+━━━━━━━━━━ 루트 .env 로 저장 (복사 시작) ━━━━━━━━━━
+EVENT_BRIDGE_BASE_URL=http://127.0.0.1:3001
+EVENT_BRIDGE_SSL_VERIFY=true
+EVENT_CONSUME_POLL_SEC=0.15
+EVENT_HEARTBEAT_MIN_INTERVAL_SEC=2
+
+USE_VISION_API=false
+MANUAL_SCENE_AUTO_RESUME_SEC=120
+
+EXHIBITION_LIGHT_MODE=pull
+EXHIBITION_DEVICE_TOKEN=CHANGEME_LONG_RANDOM_SECRET_SAME_AS_ESP_DEVICE_TOKEN
+
+EXHIBITION_LIGHT_HTTP_URL=
+EXHIBITION_LIGHT_HTTP_TOKEN=
+
+EXHIBITION_DISPLAY_HTTP_URL=
+EXHIBITION_DISPLAY_HTTP_TOKEN=
+━━━━━━━━━━ 루트 .env 로 저장 (복사 끝) ━━━━━━━━━━
+
+
+━━━━━━━━━━ web/.env.local 로 저장 (복사 시작) ━━━━━━━━━━
+NEXT_PUBLIC_APP_NAME=전시 제어
+NEXT_PUBLIC_ENABLE_VISION_RUNTIME=false
+
+NEXT_PUBLIC_VISION_API_URL=https://CHANGEME_YOUR_DOMAIN/analyze
+EXHIBITION_AGENT_BASE_URL=http://127.0.0.1:8000
+
+NEXT_PUBLIC_EXHIBIT_CAPTURE_SOURCE=tablet
+NEXT_PUBLIC_EXHIBIT_PREVIEW_INTERVAL_MS=250
+━━━━━━━━━━ web/.env.local 로 저장 (복사 끝) ━━━━━━━━━━
