@@ -1,8 +1,9 @@
 ﻿"""
-조명 제어 — 기본은 로컬망 ESP32(HTTP POST).
+조명 제어 — push: 로컬망 ESP 에 HTTP POST / pull: VPS 큐에 쌓고 ESP 가 HTTPS 로 폴링.
 
-Tapo 등 기존 스택은 제거했습니다. EXHIBITION_LIGHT_HTTP_URL 이 비어 있으면
-명령만 메모리에 남기고 네트워크 호출은 하지 않습니다(실험·무장치 환경).
+Tapo 등 기존 스택은 제거했습니다.
+- push 모드에서 EXHIBITION_LIGHT_HTTP_URL 이 비어 있으면 네트워크 호출 없음.
+- pull 모드에서는 큐에만 넣음(GET /device/light/next).
 """
 from __future__ import annotations
 
@@ -11,12 +12,15 @@ from typing import Literal
 
 import httpx
 
+from app.device.light_pull_queue import enqueue_light_command
+
 Zone = Literal["zoneA", "zoneB", "all"]
 
 
 class LightDriver:
     def __init__(self) -> None:
         self.last_command: dict | None = None
+        self._mode = os.getenv("EXHIBITION_LIGHT_MODE", "push").strip().lower()
         self._base_url = os.getenv("EXHIBITION_LIGHT_HTTP_URL", "").rstrip("/")
         self._token = os.getenv("EXHIBITION_LIGHT_HTTP_TOKEN", "")
 
@@ -38,6 +42,10 @@ class LightDriver:
             "transition_ms": int(transition_ms),
         }
         self.last_command = body
+
+        if self._mode == "pull":
+            await enqueue_light_command(body)
+            return
 
         if not self._base_url:
             return

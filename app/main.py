@@ -1,5 +1,6 @@
 ﻿import asyncio
 import os
+import secrets
 import time
 from datetime import datetime, timezone
 from typing import Any, Literal, Optional
@@ -9,12 +10,13 @@ from app.env_load import load_repo_env
 load_repo_env()
 
 import httpx
-from fastapi import FastAPI, File, Form, UploadFile, WebSocket
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile, WebSocket
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from app.device.display_driver import DisplayDriver
 from app.device.light_driver import LightDriver
+from app.device.light_pull_queue import peek_for_device
 from app.device.speaker_driver import SpeakerDriver
 from app.scene_engine import ChatHint, OverrideInput, SceneDecision, SensorState, load_default_scene_engine
 from app.vision_google import (
@@ -278,6 +280,29 @@ async def on_startup() -> None:
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/device/light/next")
+async def device_light_next(
+    since: int = 0,
+    authorization: str | None = Header(None),
+) -> dict[str, Any] | Response:
+    """ESP32 가 VPS 를 향해 HTTPS 폴링할 때 사용. EXHIBITION_LIGHT_MODE=pull 필수."""
+    if os.getenv("EXHIBITION_LIGHT_MODE", "push").strip().lower() != "pull":
+        raise HTTPException(status_code=404, detail="pull mode disabled")
+    expected = os.getenv("EXHIBITION_DEVICE_TOKEN", "").strip()
+    if not expected:
+        raise HTTPException(status_code=503, detail="EXHIBITION_DEVICE_TOKEN not set")
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="missing bearer token")
+    got = authorization[7:].strip()
+    if not secrets.compare_digest(got, expected):
+        raise HTTPException(status_code=401, detail="invalid token")
+
+    seq, body = await peek_for_device(since)
+    if body is None:
+        return Response(status_code=204)
+    return {"seq": seq, **body}
 
 
 @app.get("/status")
