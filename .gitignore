@@ -25,6 +25,7 @@ web/.vercel/
 web/.turbo/
 web/*.log
 web/certificates/
+web/tsconfig.tsbuildinfo
 
 # OS / IDE
 .DS_Store
