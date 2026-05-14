@@ -15,6 +15,7 @@ export function FloorPlanPdfCanvas({ src }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderSeq = useRef(0);
+  const layoutRetries = useRef(0);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -26,15 +27,42 @@ export function FloorPlanPdfCanvas({ src }: Props) {
 
     const cw = wrap.clientWidth;
     const ch = wrap.clientHeight;
-    if (cw < 12 || ch < 12) return;
+    if (cw < 12 || ch < 12) {
+      if (layoutRetries.current < 40) {
+        layoutRetries.current += 1;
+        requestAnimationFrame(() => void renderPdf());
+      } else {
+        setStatus("error");
+        setErrorMsg("도면 영역 크기를 읽을 수 없습니다. 창 크기를 조정해 보세요.");
+      }
+      return;
+    }
+    layoutRetries.current = 0;
 
     setStatus("loading");
 
     try {
-      const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
-      GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+      const pdfUrl = typeof window !== "undefined" ? new URL(src, window.location.origin).href : src;
+      let probe = await fetch(pdfUrl, { method: "HEAD", cache: "no-store" });
+      if (probe.status === 405 || probe.status === 501) {
+        probe = await fetch(pdfUrl, { method: "GET", cache: "no-store", headers: { Range: "bytes=0-0" } });
+      }
+      if (!probe.ok) {
+        throw new Error(
+          probe.status === 404
+            ? `파일 없음(404): ${src} — web/public/floor-plan.pdf 이름·위치 확인`
+            : `PDF 확인 실패 HTTP ${probe.status}`,
+        );
+      }
 
-      const loadingTask = getDocument(src);
+      const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
+      if (typeof window !== "undefined") {
+        GlobalWorkerOptions.workerSrc = `${window.location.origin}/pdf.worker.min.mjs`;
+      } else {
+        GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+      }
+
+      const loadingTask = getDocument(pdfUrl);
       const pdf = await loadingTask.promise;
       const page = await pdf.getPage(1);
 

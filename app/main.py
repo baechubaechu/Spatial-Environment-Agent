@@ -282,11 +282,11 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/device/light/next")
+@app.get("/device/light/next", response_model=None)
 async def device_light_next(
     since: int = 0,
     authorization: str | None = Header(None),
-) -> dict[str, Any] | Response:
+):
     """ESP32 가 VPS 를 향해 HTTPS 폴링할 때 사용. EXHIBITION_LIGHT_MODE=pull 필수."""
     if os.getenv("EXHIBITION_LIGHT_MODE", "push").strip().lower() != "pull":
         raise HTTPException(status_code=404, detail="pull mode disabled")

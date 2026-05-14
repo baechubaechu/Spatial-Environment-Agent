@@ -14,10 +14,12 @@
     "build:clean": "npm run clean && npm run build",
     "start": "next start -p 3001",
     "lint": "next lint",
+    "postinstall": "node scripts/sync-pdf-worker.js",
     "check:event-bus": "tsx scripts/check-event-bus-health.ts"
   },
   "dependencies": {
     "next": "^15.2.4",
+    "pdfjs-dist": "^4.10.38",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zod": "^3.24.2"
